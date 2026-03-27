@@ -10,7 +10,7 @@
     <!-- AR.js -->
     <script src="https://cdn.jsdelivr.net/npm/ar.js@3.3.2/aframe/build/aframe-ar.js"></script>
 
-    <!-- Component xử lý video -->
+    <!-- Fix video autoplay mobile -->
     <script>
         AFRAME.registerComponent('videohandler', {
             init: function () {
@@ -18,14 +18,24 @@
                 const video = document.querySelector('#vid');
 
                 marker.addEventListener('markerFound', () => {
-                    video.currentTime = 0;
-                    video.play();
+                    if (video) {
+                        video.currentTime = 0;
+                        video.play().catch(() => {});
+                    }
                 });
 
                 marker.addEventListener('markerLost', () => {
-                    video.pause();
+                    if (video) {
+                        video.pause();
+                    }
                 });
             }
+        });
+
+        // Fix mobile không autoplay
+        window.addEventListener('click', function () {
+            const video = document.querySelector('#vid');
+            if (video) video.play().catch(() => {});
         });
     </script>
 </head>
@@ -36,7 +46,7 @@
     embedded
     vr-mode-ui="enabled: false"
     loading-screen="enabled: false"
-    arjs="sourceType: webcam; debugUIEnabled: false;"
+    arjs="sourceType: webcam; debugUIEnabled: false; trackingMethod: best;"
 >
 
     <!-- Video -->
@@ -59,7 +69,7 @@
         url="assets/marker.patt"
         videohandler
         smooth="true"
-        smoothCount="10"
+        smoothCount="15"
         smoothTolerance="0.01"
         smoothThreshold="5"
     >
@@ -67,8 +77,8 @@
             src="#vid"
             position="0 0.1 0"
             rotation="-90 0 0"
-            width="1"
-            height="0.6"
+            width="1.2"
+            height="0.7"
         ></a-video>
     </a-marker>
 
